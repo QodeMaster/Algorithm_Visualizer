@@ -1,1 +1,55 @@
-
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bubble Sort</title>
+        <meta charset="UTF-8">
+    </head>
+    
+    <body>
+        <canvas id="can0" style="border: 2px solid black;" width="1080" height="520"></canvas>
+        <button onclick="turnOnOff()" style="display: block; border: 2px solid black; background-color: white; padding: 1em; font-size: 1em; cursor: pointer; margin-top: 1em;">Start & Stop</button>
+        <button onclick="rateShift()" style="display: block; border: 2px solid black; background-color: white; padding: 1em; font-size: 1em; cursor: pointer; margin-top: 1em;">Toggle Speed</button>
+        <button onclick="location.reload();" style="border: 2px solid black; background-color: white; padding: 1em; font-size: 1em; cursor: pointer; margin-top: 1em;">Reset</button>
+        
+        <script>
+            const c0 = document.getElementById("can0");
+            const ctx = c0.getContext("2d");
+            const width = c0.width;
+            const height = c0.height;
+            ctx.fillStyle = "blue";
+            let stapleArr = [];
+            let sortedVal = 0;
+            let onOff = false;
+            let iSaverbool = false;
+            let iSaver = 0;
+            let frameSpeed = 300;
+            
+            let randNum = () => ~~(Math.random() * 400) + 20;
+            
+            for(let i = 0; i <= 30; i++) {
+                let stapleHeight = randNum();
+                stapleArr.push(stapleHeight);
+            }
+            draw();
+            
+            function rateShift() {
+                if(frameSpeed == 300) frameSpeed = 100;
+                else frameSpeed = 300;
+            }
+            
+            function draw() {
+                for(let i = 0; i < width - 160 - sortedVal * 30; i += 30) {
+                    ctx.fillRect(i + 80, height - stapleArr[i / 30], 20, stapleArr[i / 30]);
+                }
+                
+                ctx.fillStyle = "#00cc00";
+                for(let i = 0; i < sortedVal; i++) {
+                    let len = stapleArr.length - 1;
+                    ctx.fillRect(width - 100 - i * 30, height - stapleArr[len - i], 20, stapleArr[len - i]);
+                }
+                ctx.fillStyle = "blue";
+            }
+            
+        </script>
+    </body>
+</html>
