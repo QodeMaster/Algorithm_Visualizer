@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Bubble Sort</title>
+        <title>Merge Sort</title>
         <meta charset="UTF-8">
     </head>
     
@@ -18,36 +18,106 @@
             const height = c0.height;
             ctx.fillStyle = "blue";
             let stapleArr = [];
-            let sortedVal = 0;
             let onOff = false;
-            let iSaverbool = false;
-            let iSaver = 0;
+            let indexLogger = 0;
+            let frameSaveArray = [];
             let frameSpeed = 300;
             
             let randNum = () => ~~(Math.random() * 400) + 20;
+
+            function frameFiller(arr, color = "#0000ff") {
+                let frame = [];
+                for(let i = 0; i < arr.length; i++) frame.push([arr[i], color]);
+                return frame;
+            }
             
             for(let i = 0; i <= 30; i++) {
                 let stapleHeight = randNum();
                 stapleArr.push(stapleHeight);
             }
-            draw();
+            frameSaveArray.push(frameFiller(stapleArr));
+            draw(frameSaveArray[0]);
+
+            function mergeSort(arr) {
+                mSort(arr, 0, arr.length - 1);
+                frameSaveArray.push(frameFiller(arr));
+            }
+
+            function mSort(arr, leftStart, rightEnd) {
+                if(leftStart < rightEnd) {
+                    let mid = (leftStart + rightEnd) >> 1;
+                    mSort(arr, leftStart, mid);
+                    mSort(arr, mid + 1, rightEnd);
+                    merge(arr, leftStart, mid, rightEnd);
+                }
+            }
+
+            function merge(arr, left, mid, right) {
+                let i = left;
+                let j = mid + 1;
+                let tempArray = [];
+                let frame = [];
+              
+                while(i <= mid && j <= right) {
+                    frame = frameFiller(arr);
+                    frame[i][1] = "#ff0000";
+                    frame[j][1] = "#ff0000";
+
+                    if(arr[i] < arr[j]) {
+                        tempArray.push(arr[i]);
+                        i++;
+                    } else {
+                        tempArray.push(arr[j]);
+                        j++;
+                    }
+                    frameSaveArray.push(frame);
+                }
+              
+                if(mid < i) {
+                    tempArray.push(...arr.slice(j, right + 1));
+                } else {
+                    tempArray.push(...arr.slice(i, mid + 1));
+                }
+                frameSaveArray.push(frame);
+                arr.splice(left, right - left + 1, ...tempArray);
+            }
+            mergeSort(stapleArr);
+
+            function turnOnOff() {
+                onOff = !onOff;
+                function forLoop(i) {
+                    draw(frameSaveArray[i]);
+                    indexLogger = i;
+                    if(i < frameSaveArray.length - 1 && onOff) setTimeout(forLoop, frameSpeed, i + 1);
+                    else if(frameSaveArray.length - 1 <= i) lastDraw(stapleArr);
+                }
+                setTimeout(forLoop, frameSpeed, indexLogger);
+            }
+
+
             
             function rateShift() {
                 if(frameSpeed == 300) frameSpeed = 100;
                 else frameSpeed = 300;
             }
             
-            function draw() {
-                for(let i = 0; i < width - 160 - sortedVal * 30; i += 30) {
-                    ctx.fillRect(i + 80, height - stapleArr[i / 30], 20, stapleArr[i / 30]);
+            function draw(arr) {
+                ctx.clearRect(0, 0, width, height);
+                let elem;
+                for(let i = 0; i < width - 160; i += 30) {
+                    elem = arr[i / 30];
+                    ctx.fillStyle = elem[1];
+                    ctx.fillRect(i + 80, height - elem[0], 20, elem[0]);
                 }
-                
+            }
+
+            function lastDraw(arr) {
                 ctx.fillStyle = "#00cc00";
-                for(let i = 0; i < sortedVal; i++) {
-                    let len = stapleArr.length - 1;
-                    ctx.fillRect(width - 100 - i * 30, height - stapleArr[len - i], 20, stapleArr[len - i]);
+                function forLoop(i) {
+                    ctx.fillRect(i + 80, height - arr[i / 30], 20, arr[i / 30]);
+                    if(i < width - 160) setTimeout(forLoop, frameSpeed, i + 30);
                 }
-                ctx.fillStyle = "blue";
+                setTimeout(forLoop, frameSpeed, 0);
             }
             
         </script>
