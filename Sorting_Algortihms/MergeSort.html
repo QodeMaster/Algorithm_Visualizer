@@ -24,9 +24,9 @@
             
             let randNum = () => ~~(Math.random() * 400) + 20;
 
-            function frameFiller(arr, color = "#0000ff") {
+            function frameFiller(arr) {
                 let frame = [];
-                for(let i = 0; i < arr.length; i++) frame.push([arr[i], color]);
+                for(let i = 0; i < arr.length; i++) frame.push([arr[i], "#0000ff"]);
                 return frame;
             }
             
@@ -79,6 +79,7 @@
                 }
                 frameSaveArray.push(frame);
                 arr.splice(left, right - left + 1, ...tempArray);
+                frameSaveArray.push(frameFiller(arr));
             }
             mergeSort(stapleArr);
 
