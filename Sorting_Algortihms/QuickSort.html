@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quick Sort</title>
+    <meta charset="UTF-8">
+  </head>
+  
+  <body>
+    <canvas id="can0" style="border: 2px solid black;" width="1080" height="520"></canvas>
+    <button onclick="turnOnOff()" style="display: block; border: 2px solid black; background-color: white; padding: 1em; font-size: 1em; cursor: pointer; margin-top: 1em;">Start & Stop</button>
+    <button onclick="rateShift()" style="display: block; border: 2px solid black; background-color: white; padding: 1em; font-size: 1em; cursor: pointer; margin-top: 1em;">Toggle Speed</button>
+    <button onclick="location.reload();" style="border: 2px solid black; background-color: white; padding: 1em; font-size: 1em; cursor: pointer; margin-top: 1em;">Reset</button>
+    
+    <script>
+      const c0 = document.getElementById("can0");
+      const ctx = c0.getContext("2d");
+      const width = c0.width;
+      const height = c0.height;
+      let stapleArr = [];
+      let onOff = false;
+      let indexLogger = 0;
+      let frameSaveArray = [];
+      let frameSpeed = 300;
+      let sortedAlready = [];
+      
+      let randNum = () => ~~(Math.random() * 400) + 20;
+
+      function frameFiller(arr) {
+        let frame = [];
+        for(let i = 0; i < arr.length; i++) {
+          frame.push([arr[i], (sortedAlready.includes(i) ? "#00cc00" : "#0000ff")]);
+        }
+        return frame;
+      }
+
+      function frameDuoColorChanger(arr, indexOne, indexTwo, stapleColor) {
+        let frame = frameFiller(arr);
+        frame[indexOne][1] = stapleColor;
+        frame[indexTwo][1] = stapleColor;
+        return frame;
+      }
+      
+      for(let i = 0; i <= 30; i++) {
+        let stapleHeight = randNum();
+        stapleArr.push(stapleHeight);
+      }
+      frameSaveArray.push(frameFiller(stapleArr));
+      draw(frameSaveArray[0]);
+
+      function quickSort(arr) {
+        qSort(arr, 0, arr.length - 1);
+        frameSaveArray.push(frameFiller(stapleArr));
+      }
+
+      function qSort(arr, low, high) {
+        if (low < high) {
+
+          let pi = partition(arr, low, high);
+
+          qSort(arr, low, pi - 1);
+
+          qSort(arr, pi + 1, high);
+        }
+      }
+
+      function partition(arr, low, high) {
+
+        let pivot = arr[high];
+
+        let i = low - 1;
+
+        for (let j = low; j < high; j++) {
+          frameSaveArray.push(frameDuoColorChanger(arr, j, high, "#ff0000"));
+          if (arr[j] <= pivot) {
+
+            i++;
+
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+            frameSaveArray.push(frameDuoColorChanger(arr, i, j, "#cc00ff"));
+          }
+        }
+
+        [arr[high], arr[i + 1]] = [arr[i + 1], arr[high]];
+
+        frameSaveArray.push(frameDuoColorChanger(arr, high, i + 1, "#cc00ff"));
+        sortedAlready.push(i + 1);
+        if(i + 1 - low == 1) sortedAlready.push(low);
+        if(i + 2 == high) sortedAlready.push(high);
+
+        return i + 1;
+      }
+      quickSort(stapleArr);
+
+      function turnOnOff() {
+        onOff = !onOff;
+        function forLoop(i) {
+          draw(frameSaveArray[i]);
+          indexLogger = i;
+          if(i < frameSaveArray.length - 1 && onOff) setTimeout(forLoop, frameSpeed, i + 1);
+        }
+        setTimeout(forLoop, frameSpeed, indexLogger);
+      }
+
+      
+      function rateShift() {
+        if(frameSpeed == 300) frameSpeed = 100;
+        else frameSpeed = 300;
+      }
+      
+      function draw(arr) {
+        ctx.clearRect(0, 0, width, height);
+        let elem;
+        for(let i = 0; i < width - 160; i += 30) {
+          elem = arr[i / 30];
+          ctx.fillStyle = elem[1];
+          ctx.fillRect(i + 80, height - elem[0], 20, elem[0]);
+        }
+      }
+    </script>
+  </body>
+</html>
